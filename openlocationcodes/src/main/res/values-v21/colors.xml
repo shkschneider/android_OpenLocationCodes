@@ -1,0 +1,6 @@
+<resources>
+
+    <color name="statusBarColor">@color/black</color> <!-- primaryColorDark or black -->
+    <color name="navigationBarColor">@color/black</color> <!-- usually black -->
+
+</resources>

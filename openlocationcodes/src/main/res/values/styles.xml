@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Tweak for multiple implementations -->
+    <style name="AppTheme" parent="@style/_AppTheme" />
+
+    <!-- Default implementation API-14+ -->
+    <style name="_AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <!-- Material Design -->
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/actionBarColor</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- Android -->
+        <item name="android:windowBackground">@color/contentBackgroundColor</item>
+        <!--<item name="android:textColorPrimary">@color/textPrimaryColor</item>-->
+        <!--<item name="android:textColorSecondary">@color/textSecondaryColor</item>-->
+        <item name="android:textColorHighlight">@color/accentColor</item>
+        <item name="android:textColorHint">@color/textSecondaryColor</item>
+        <item name="android:scrollingCache">false</item>
+    </style>
+
+    <style name="AppTheme.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.Toolbar.Overlay" parent="@style/AppTheme.Toolbar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+    <style name="AppTheme.Toolbar.Popup" parent="@style/ThemeOverlay.AppCompat.Light" />
+
+</resources>

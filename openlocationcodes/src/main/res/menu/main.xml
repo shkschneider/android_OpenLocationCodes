@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_openlocationcode"
+        android:title="@string/menu_openlocationcode"
+        android:icon="@null"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/menu_sourcecode"
+        android:title="@string/menu_sourcecode"
+        android:icon="@null"
+        app:showAsAction="never" />
+
+</menu>

@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="title">"Open Location Codes"</string>
+    <string name="subtitle">"Java implementation"</string>
+    <string name="credits">"Open Location Codes were developed at Google's Zurich engineering office, and then open sourced so that they can be freely used.\n\nThis application is just a demo of my personal Java implementation of its algorithm, licensed under Apache 2.0 license."</string>
+    <string name="menu_openlocationcode">"OpenLocationCode.com"</string>
+    <string name="menu_sourcecode">"Java Source Code"</string>
+
+</resources>
