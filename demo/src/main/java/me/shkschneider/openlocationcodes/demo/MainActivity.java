@@ -1,4 +1,4 @@
-package me.shkschneider.openlocationcodes;
+package me.shkschneider.openlocationcodes.demo;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,6 +21,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolygonOptions;
+
+import me.shkschneider.openlocationcodes.OpenLocationCodes;
 
 public class MainActivity extends FragmentActivity {
 

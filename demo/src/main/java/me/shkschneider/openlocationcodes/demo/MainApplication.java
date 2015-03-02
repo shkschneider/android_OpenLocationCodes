@@ -1,4 +1,4 @@
-package me.shkschneider.openlocationcodes;
+package me.shkschneider.openlocationcodes.demo;
 
 import android.app.Application;
 import android.content.Context;

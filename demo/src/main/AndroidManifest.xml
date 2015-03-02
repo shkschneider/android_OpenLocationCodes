@@ -1,15 +1,17 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.shkschneider.openlocationcodes">
-
-    <!-- Google Maps -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- Location -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    package="me.shkschneider.openlocationcodes.demo">
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="true" />
+
+    <!-- Internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Google Maps v2 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <supports-screens
         android:smallScreens="true"
@@ -23,9 +25,9 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/title"
         android:theme="@style/AppTheme"
-        android:name="me.shkschneider.openlocationcodes.MainApplication">
+        android:name=".MainApplication">
 
-        <activity android:name="me.shkschneider.openlocationcodes.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/OpenLocationCode.iml" filepath="$PROJECT_DIR$/OpenLocationCode.iml" />
       <module fileurl="file://$PROJECT_DIR$/OpenLocationCodes.iml" filepath="$PROJECT_DIR$/OpenLocationCodes.iml" />
-      <module fileurl="file://$PROJECT_DIR$/openlocationcodes/openlocationcodes.iml" filepath="$PROJECT_DIR$/openlocationcodes/openlocationcodes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
     </modules>
   </component>
 </project>
