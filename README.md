@@ -12,3 +12,15 @@ Open Location Codes were developed at Google's Zurich engineering office, and th
 This application is just a demo of my personal Java implementation of its algorithm, licensed under Apache 2.0 license.
 
 https://github.com/shkschneider/android_OpenLocationCodes
+
+**Usage**
+
+    // Encode
+    final String openLocationCode = OpenLocationCodes.encode(latitude, longitude);
+    
+    // Decode
+    final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(openLocationCode);
+    codeArea.northwest();
+    codeArea.southwest();
+    codeArea.southeast();
+    codeArea.northeast();
