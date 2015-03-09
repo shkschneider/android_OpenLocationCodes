@@ -76,8 +76,11 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public boolean onMyLocationButtonClick() {
                         final Location location = mGoogleMap.getMyLocation();
-                        openLocationCode(location.getLatitude(), location.getLongitude());
-                        return true;
+                        if (location != null) {
+                            openLocationCode(location.getLatitude(), location.getLongitude());
+                            return true;
+                        }
+                        return false;
                     }
                 });
                 mGoogleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
