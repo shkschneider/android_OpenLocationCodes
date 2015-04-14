@@ -326,7 +326,7 @@ public class OpenLocationCodes {
         // They are, so we can trim the required number of characters from the code.
         // But first we strip the prefix and separator and convert to upper case.
         String newCode = code.replace(SEPARATOR, "").toUpperCase();
-        // And trim the caracters, adding one to avoid the prefix.
+        // And trim the characters, adding one to avoid the prefix.
         return newCode.substring(trimLength);
     }
 
