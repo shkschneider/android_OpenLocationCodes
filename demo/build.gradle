@@ -35,8 +35,8 @@ android {
     }
     buildTypes {
         debug {
-            // applicationIdSuffix '.debug'
-            // versionNameSuffix '-DEBUG'
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
             debuggable true
             jniDebuggable false
             zipAlignEnabled true

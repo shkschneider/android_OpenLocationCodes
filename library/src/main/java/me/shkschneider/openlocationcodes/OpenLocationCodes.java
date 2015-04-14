@@ -27,9 +27,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 // From <https://github.com/google/open-location-code>
 public class OpenLocationCodes {
 
-    private static final String PREFIX = "+";
-    private static final String SEPARATOR = ".";
-    private static final int SEPARATOR_POSITION = 4;
+    private static final String SEPARATOR = "+";
+    private static final int SEPARATOR_POSITION = 8;
     private static final String PADDING_CHARACTER = "0";
     private static final String CODE_ALPHABET = "23456789CFGHJMPQRVWX";
     private static final int ENCODING_BASE = CODE_ALPHABET.length();
@@ -42,10 +41,7 @@ public class OpenLocationCodes {
     private static final int GRID_COLUMNS = 4;
     private static final int GRID_ROWS = 5;
     private static final float GRID_SIZE_DEGREES = 0.000125F;
-    private static final int MIN_SHORT_CODE_LEN = 4;
-    private static final int MAX_SHORT_CODE_LEN = 7;
-    private static final int MIN_TRIMMABLE_CODE_LEN = 10;
-    private static final int MAX_TRIMMABLE_CODE_LEN = 11;
+    private static final int MIN_TRIMMABLE_CODE_LEN = 6;
 
     // Checks
 
@@ -53,26 +49,37 @@ public class OpenLocationCodes {
         if (code == null || code.length() == 0) {
             return false;
         }
-        // If the code includes more than one prefix character, it is not valid.
-        if (code.indexOf(PREFIX) != code.lastIndexOf(PREFIX)) {
+        // The separator is required.
+        if (! code.contains(SEPARATOR)) {
             return false;
         }
-        // If the code includes the prefix character but not in the first position, it is not valid.
-        if (code.indexOf(PREFIX) > 0) {
+        if (code.indexOf(SEPARATOR) != code.lastIndexOf(SEPARATOR)) {
             return false;
         }
-        // Strip off the prefix if it was provided.
-        code = code.replace(PREFIX, "");
-        // If the code includes more than one separator, it is not valid.
-        if (code.contains(SEPARATOR)) {
-            if (code.indexOf(SEPARATOR) != code.lastIndexOf(SEPARATOR)) {
+        // Is it in an illegal position?
+        if (code.indexOf(SEPARATOR) > SEPARATOR_POSITION || code.indexOf(SEPARATOR) % 2 == 1) {
+            return false;
+        }
+        // We can have an even number of padding characters before the separator, but then it must be the final character.
+        if (code.contains(PADDING_CHARACTER)) {
+            // Not allowed to start with them!
+            if (code.indexOf(PADDING_CHARACTER) == 0) {
                 return false;
             }
-            // If there is a separator, and it is in a position != SEPARATOR_POSITION, the code is not valid.
-            if (code.indexOf(SEPARATOR) != SEPARATOR_POSITION) {
+            // There can only be one group and it must have even length.
+            // TODO
+            // If the code is long enough to end with a separator, make sure it does.
+            if (code.charAt(code.length() - 1) != SEPARATOR.charAt(0)) {
                 return false;
             }
         }
+        // If there are characters after the separator, make sure there isn't just one of them (not legal).
+        if (code.length() - code.indexOf(SEPARATOR) - 1 == 1) {
+            return false;
+        }
+        // Strip the separator and any padding characters.
+        code = code.replaceAll("\\" + SEPARATOR + "+", "");
+        code = code.replaceAll(PADDING_CHARACTER + "+", "");
         // Check the code contains only valid characters.
         int len = code.length();
         for (int i = 0; i < len; i++) {
@@ -85,39 +92,36 @@ public class OpenLocationCodes {
     }
 
     private static boolean isShort(String code) {
+        // Check it's valid.
         if (! isValid(code)) {
             return false;
         }
-        if (code.contains(SEPARATOR)) {
-            return false;
+        // If there are less characters than expected before the SEPARATOR.
+        if (code.contains(SEPARATOR) && code.indexOf(SEPARATOR) < SEPARATOR_POSITION) {
+            return true;
         }
-        // Strip off the prefix if it was provided.
-        code = code.replace(PREFIX, "");
-        if (code.length() < MIN_SHORT_CODE_LEN) {
-            return false;
-        }
-        if (code.length() > MAX_SHORT_CODE_LEN) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
     private static boolean isFull(String code) {
         if (! isValid(code)) {
             return false;
         }
-        // Strip off the prefix if it was provided.
-        code = code.replace(PREFIX, "");
+        // If it's short, it's not full.
+        if (isShort(code)) {
+            return false;
+        }
         // Work out what the first latitude character indicates for latitude.
-        double firstLatValue = CODE_ALPHABET.indexOf(code.charAt(0)) * ENCODING_BASE;
+        final int firstLatValue = CODE_ALPHABET.indexOf(code.charAt(0)) * ENCODING_BASE;
         if (firstLatValue >= LATITUDE_MAX * 2) {
             // The code would decode to a latitude of >= 90 degrees.
             return false;
         }
         if (code.length() > 1) {
-            double firstLngvalue = CODE_ALPHABET.indexOf(code.charAt(1)) * ENCODING_BASE;
-            if (firstLngvalue >= LONGITUDE_MAX * 2) {
-                // The code would decode to a longitude of >= 180 degrees.
+            // Work out what the first longitude character indicates for longitude.
+            final int firstLngValue = CODE_ALPHABET.indexOf(code.charAt(0)) * ENCODING_BASE;
+            if (firstLngValue >= LONGITUDE_MAX * 2) {
+                // The code would deode to a longitude of >= 180 degrees.
                 return false;
             }
         }
@@ -141,7 +145,7 @@ public class OpenLocationCodes {
         if (latitude == 90) {
             latitude = latitude - computeLatitudePrecision(codeLength);
         }
-        String code = PREFIX + encodePairs(latitude, longitude, Math.min(codeLength, PAIR_CODE_LENGTH));
+        String code = encodePairs(latitude, longitude, Math.min(codeLength, PAIR_CODE_LENGTH));
         // If the requested length indicates we want grid refined codes.
         if (codeLength > PAIR_CODE_LENGTH) {
             code += encodeGrid(latitude, longitude, codeLength - PAIR_CODE_LENGTH);
@@ -235,8 +239,6 @@ public class OpenLocationCodes {
         if (! isFull(code)) {
             throw new IllegalArgumentException("Passed Open Location Code is not a valid full code: " + code);
         }
-        // Strip off the prefix if it was provided.
-        code = code.replace(PREFIX, "");
         // Strip out separator character (we've already established the code is valid so the maximum is one),
         // padding characters and convert to upper case.
         code = code.replace(SEPARATOR, "");
@@ -310,8 +312,8 @@ public class OpenLocationCodes {
             throw new IllegalArgumentException("Passed code is not valid and full: " + code);
         }
         final CodeArea codeArea = decode(code);
-        if (codeArea.codeLength < MIN_TRIMMABLE_CODE_LEN || codeArea.codeLength > MAX_TRIMMABLE_CODE_LEN) {
-            throw new IllegalArgumentException("Code length must be between " + MIN_TRIMMABLE_CODE_LEN + " and " + MAX_TRIMMABLE_CODE_LEN);
+        if (codeArea.codeLength < MIN_TRIMMABLE_CODE_LEN) {
+            throw new IllegalArgumentException("Code length must be at least " + MIN_TRIMMABLE_CODE_LEN);
         }
         // Ensure that latitude and longitude are valid.
         latitude = clipLatitude(latitude);
@@ -323,9 +325,9 @@ public class OpenLocationCodes {
         }
         // They are, so we can trim the required number of characters from the code.
         // But first we strip the prefix and separator and convert to upper case.
-        String newCode = code.replace(PREFIX, "").replace(SEPARATOR, "").toUpperCase();
+        String newCode = code.replace(SEPARATOR, "").toUpperCase();
         // And trim the caracters, adding one to avoid the prefix.
-        return PREFIX + newCode.substring(trimLength);
+        return newCode.substring(trimLength);
     }
 
     public static class CodeArea {
