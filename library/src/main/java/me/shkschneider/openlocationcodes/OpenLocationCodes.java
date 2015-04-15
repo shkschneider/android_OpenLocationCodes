@@ -297,20 +297,72 @@ public class OpenLocationCodes {
         return new CodeArea(latitudeLo, longitudeLo, latitudeLo + latPlaceValue, longitudeLo + lngPlaceValue, code.length());
     }
 
+    // Nearest
+
+    @Deprecated
+    public static String nearest(String shortCode, double referenceLatitude, double referenceLongitude) {
+        if (! isShort(shortCode)) {
+            if (isFull(shortCode)) {
+                return shortCode;
+            }
+            else {
+                throw new IllegalArgumentException("Passed short code is not valid: " + shortCode);
+            }
+        }
+        // Ensure that latitude and longitude are valid.
+        referenceLatitude = clipLatitude(referenceLatitude);
+        referenceLongitude = normalizeLongitude(referenceLongitude);
+
+        // Clean up the passed code.
+        shortCode = shortCode.toUpperCase();
+        // Compute the number of digits we need to recover.
+        final int paddingLength = SEPARATOR_POSITION - shortCode.indexOf(SEPARATOR);
+        // The resolution (height and width) of the padded area in degrees.
+        final double resolution = Math.pow(20, 2 - (paddingLength / 2));
+        // Distance from the center to an edge (in degrees).
+        final double areaToEdge = resolution / 2.0D;
+
+        // Now round down the reference latitude and longitude to the resolution.
+        final double roundedLatitude = Math.floor(referenceLatitude / resolution) * resolution;
+        final double roundedLongitude = Math.floor(referenceLongitude / resolution) * resolution;
+
+        // Use the reference location to pad the supplied short code and decode it.
+        final CodeArea codeArea = decode(encode(roundedLatitude, roundedLongitude).substring(0, paddingLength) + shortCode);
+        // How many degrees latitude is the code from the reference?
+        // If it is more than half the resolution, we need to move it east or west.
+        double degreesDifference = codeArea.latitudeCenter - referenceLatitude;
+        if (degreesDifference > areaToEdge) {
+            // If the center of the short code is more than half a cell east, then the best match will be one position west.
+            codeArea.latitudeCenter -= resolution;
+        }
+        else if (degreesDifference < -areaToEdge) {
+            // If the center of the short code is more than half a cell west, then the best match will be one position east.
+            codeArea.latitudeCenter += resolution;
+        }
+
+        // How many degrees longitude is the code from the reference?
+        degreesDifference = codeArea.longitudeCenter - referenceLongitude;
+        if (degreesDifference > areaToEdge) {
+            codeArea.longitudeCenter -= resolution;
+        }
+        else if (degreesDifference < -areaToEdge) {
+            codeArea.longitudeCenter += resolution;
+        }
+
+        return encode(codeArea.latitudeCenter, codeArea.longitudeCenter,codeArea.codeLength);
+    }
+
     // Shorten
 
-    public static String shortenBy4(String code, double latitude, double longitude) {
-        return shortenBy(4, code, latitude, longitude, 0.25F);
-    }
-
-    public static String shortenBy6(String code, double latitude, double longitude) {
-        return shortenBy(6, code, latitude, longitude, 0.0125F);
-    }
-
-    private static String shortenBy(int trimLength, String code, double latitude, double longitude, float range) throws IllegalArgumentException {
+    @Deprecated
+    public static String shorten(String code, double latitude, double longitude) throws IllegalArgumentException {
         if (! isFull(code)) {
             throw new IllegalArgumentException("Passed code is not valid and full: " + code);
         }
+        if (code.contains(PADDING_CHARACTER)) {
+            throw new IllegalArgumentException("Cannot shorten padded codes: " + code);
+        }
+        code = code.toUpperCase();
         final CodeArea codeArea = decode(code);
         if (codeArea.codeLength < MIN_TRIMMABLE_CODE_LEN) {
             throw new IllegalArgumentException("Code length must be at least " + MIN_TRIMMABLE_CODE_LEN);
@@ -318,16 +370,17 @@ public class OpenLocationCodes {
         // Ensure that latitude and longitude are valid.
         latitude = clipLatitude(latitude);
         longitude = normalizeLongitude(longitude);
-        // Are the latitude and longitude close enough?
-        if (Math.abs(codeArea.latitudeCenter - latitude) > range || Math.abs(codeArea.longitudeCenter - longitude) > range) {
-            // No they're not, so return the original code.
-            return code;
+        // How close are the latitude and longitude to the code center.
+        final double range = Math.max(Math.abs(codeArea.latitudeCenter - latitude), Math.abs(codeArea.longitudeCenter - longitude));
+        for (int i = PAIR_RESOLUTIONS.length - 2; i >= 1; i--) {
+            // Check if we're close enough to shorten.
+            // The range must be less than 1/2 the resolution to shorten at all, and we want to allow some safety, so use 0.3 instead of 0.5 as a multiplier.
+            if (range < (PAIR_RESOLUTIONS[i] * 0.3)) {
+                // Trim it.
+                return code.substring((i + 1) * 2);
+            }
         }
-        // They are, so we can trim the required number of characters from the code.
-        // But first we strip the prefix and separator and convert to upper case.
-        String newCode = code.replace(SEPARATOR, "").toUpperCase();
-        // And trim the characters, adding one to avoid the prefix.
-        return newCode.substring(trimLength);
+        return code;
     }
 
     public static class CodeArea {
