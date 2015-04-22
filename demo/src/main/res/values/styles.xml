@@ -4,17 +4,15 @@
     <style name="AppTheme" parent="@style/_AppTheme" />
 
     <!-- Default implementation API-14+ -->
-    <style name="_AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="_AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <!-- Material Design -->
-        <!--<item name="android:windowNoTitle">true</item>-->
         <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/actionBarColor</item>
         <item name="colorAccent">@color/accentColor</item>
         <item name="android:windowContentOverlay">@null</item>
         <!-- Android -->
         <item name="android:windowBackground">@color/contentBackgroundColor</item>
-        <!--<item name="android:textColorPrimary">@color/textPrimaryColor</item>-->
-        <!--<item name="android:textColorSecondary">@color/textSecondaryColor</item>-->
         <item name="android:textColorHighlight">@color/accentColor</item>
         <item name="android:textColorHint">@color/textSecondaryColor</item>
         <item name="android:scrollingCache">false</item>

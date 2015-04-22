@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +25,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 
 import me.shkschneider.openlocationcodes.OpenLocationCodes;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     private GoogleMap mGoogleMap;
     private TextView mTextView;
@@ -39,6 +40,7 @@ public class MainActivity extends FragmentActivity {
         toolbar.setSubtitle(getResources().getString(R.string.subtitle));
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+
             @Override
             public boolean onMenuItemClick(final MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
@@ -51,11 +53,13 @@ public class MainActivity extends FragmentActivity {
                 }
                 return false;
             }
+
         });
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
         final SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
+
             @Override
             public void onMapReady(final GoogleMap googleMap) {
                 mGoogleMap = googleMap;
@@ -73,6 +77,7 @@ public class MainActivity extends FragmentActivity {
                 mGoogleMap.setMyLocationEnabled(true);
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 mGoogleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+
                     @Override
                     public boolean onMyLocationButtonClick() {
                         final Location location = mGoogleMap.getMyLocation();
@@ -82,15 +87,19 @@ public class MainActivity extends FragmentActivity {
                         }
                         return false;
                     }
+
                 });
                 mGoogleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
                     @Override
                     public void onMyLocationChange(final Location location) {
                         openLocationCode(location.getLatitude(), location.getLongitude());
                         mGoogleMap.setOnMyLocationChangeListener(null);
                     }
+
                 });
             }
+
         });
 
         mTextView = (TextView) findViewById(R.id.textView);
@@ -100,11 +109,13 @@ public class MainActivity extends FragmentActivity {
             new AlertDialog.Builder(MainActivity.this)
                     .setMessage(getResources().getString(R.string.credits))
                     .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
                         @Override
                         public void onClick(final DialogInterface dialogInterface, final int which) {
                             dialogInterface.dismiss();
                             sharedPreferences.edit().putBoolean("credits", true).apply();
                         }
+
                     })
                     .show();
         }
@@ -114,10 +125,12 @@ public class MainActivity extends FragmentActivity {
         final String openLocationCode = OpenLocationCodes.encode(latitude, longitude);
         mTextView.setText(openLocationCode);
         mTextView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(final View view) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://plus.codes/" + openLocationCode)));
             }
+
         });
 
         final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(openLocationCode);

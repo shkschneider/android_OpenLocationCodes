@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_marginBottom="@dimen/spaceMedium"
+        android:layout_marginBottom="@dimen/actionbar"
         android:orientation="vertical">
 
         <include layout="@layout/fragment_map" />

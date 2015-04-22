@@ -24,8 +24,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/title"
-        android:theme="@style/AppTheme"
-        android:name=".MainApplication">
+        android:theme="@style/AppTheme">
 
         <activity android:name=".MainActivity">
             <intent-filter>
