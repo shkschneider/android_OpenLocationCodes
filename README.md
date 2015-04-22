@@ -27,5 +27,5 @@ https://github.com/shkschneider/android_OpenLocationCodes
 
 **Versions**
 
-- Version 1.2.0 uses the (new) *xxxxxx+xx* format as of [224cc1e](https://github.com/google/open-location-code/commit/224cc1ef2d60214669896279c4fcafc6eecc739a).
-- Version 1.1.1 used the (old) *+xxxx.xxxxxx* format as of [7701fcb](https://github.com/google/open-location-code/commit/7701fcbf65c5b6143495de05eeffc5e417751e0c).
+- Version 1.2+ uses the (new) *xxxxxx+xx* format as of [224cc1e](https://github.com/google/open-location-code/commit/224cc1ef2d60214669896279c4fcafc6eecc739a).
+- Version 1.1+ used the (old) *+xxxx.xxxxxx* format as of [7701fcb](https://github.com/google/open-location-code/commit/7701fcbf65c5b6143495de05eeffc5e417751e0c).
