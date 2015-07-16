@@ -56,6 +56,10 @@ public class OpenLocationCodes {
         if (code.indexOf(SEPARATOR) != code.lastIndexOf(SEPARATOR)) {
             return false;
         }
+        // Is it the only character?
+        if (code.length() == 1) {
+            return false;
+        }
         // Is it in an illegal position?
         if (code.indexOf(SEPARATOR) > SEPARATOR_POSITION || code.indexOf(SEPARATOR) % 2 == 1) {
             return false;
