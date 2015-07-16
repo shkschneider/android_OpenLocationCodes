@@ -17,6 +17,9 @@ package me.shkschneider.openlocationcodes;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 // Open Location Codes were developed at Google's Zurich engineering office, and then open sourced so that they can be freely used.
 // The main author is Doug Rinckes (@drinckes), with the help of lots of colleagues including:
 // Philipp Bunge, Aner Ben-Artzi, Jarda Bengl, Prasenit Phukan, Sacha van Ginhoven
@@ -71,7 +74,11 @@ public class OpenLocationCodes {
                 return false;
             }
             // There can only be one group and it must have even length.
-            // TODO
+            final Pattern pattern = Pattern.compile("(" + PADDING_CHARACTER + "+)");
+            final Matcher matcher = pattern.matcher(code);
+            if (matcher.groupCount() > 1 || (matcher.group(0).length() % 2) == 1 || matcher.group(0).length() > SEPARATOR_POSITION - 2) {
+                return false;
+            }
             // If the code is long enough to end with a separator, make sure it does.
             if (code.charAt(code.length() - 1) != SEPARATOR.charAt(0)) {
                 return false;
@@ -125,7 +132,7 @@ public class OpenLocationCodes {
             // Work out what the first longitude character indicates for longitude.
             final int firstLngValue = CODE_ALPHABET.indexOf(code.charAt(0)) * ENCODING_BASE;
             if (firstLngValue >= LONGITUDE_MAX * 2) {
-                // The code would deode to a longitude of >= 180 degrees.
+                // The code would decode to a longitude of >= 180 degrees.
                 return false;
             }
         }
