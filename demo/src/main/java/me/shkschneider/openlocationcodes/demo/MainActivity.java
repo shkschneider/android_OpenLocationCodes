@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(openLocationCode);
+        final String shorten = OpenLocationCodes.shorten(openLocationCode, latitude, longitude);
+        final String nearest = OpenLocationCodes.nearest(openLocationCode, latitude, longitude);
         mGoogleMap.clear();
         mGoogleMap.addPolygon(new PolygonOptions()
                 .add(codeArea.northwest())
