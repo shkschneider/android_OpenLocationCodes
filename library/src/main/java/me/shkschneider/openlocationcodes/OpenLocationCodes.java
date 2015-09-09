@@ -44,7 +44,6 @@ public class OpenLocationCodes {
     private static final int GRID_COLUMNS = 4;
     private static final int GRID_ROWS = 5;
     private static final float GRID_SIZE_DEGREES = 0.000125F;
-    private static final int MIN_TRIMMABLE_CODE_LEN = 6;
 
     // Checks
 
