@@ -23,6 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.util.Locale;
+
 import me.shkschneider.openlocationcodes.OpenLocationCodes;
 
 public class MainActivity extends AppCompatActivity {
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onMyLocationChange(final Location location) {
                         openLocationCode(location.getLatitude(), location.getLongitude());
-                        mGoogleMap.setOnMyLocationChangeListener(null);
+                        // mGoogleMap.setOnMyLocationChangeListener(null);
                     }
 
                 });
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openLocationCode(final double latitude, final double longitude) {
         final String openLocationCode = OpenLocationCodes.encode(latitude, longitude);
-        mTextView.setText(openLocationCode);
+        mTextView.setText(String.format(Locale.US, "%f / %f\n%s", latitude, longitude, openLocationCode));
         mTextView.setOnClickListener(new View.OnClickListener() {
 
             @Override

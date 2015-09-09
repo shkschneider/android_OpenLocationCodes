@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_marginBottom="@dimen/actionbar"
+        android:layout_marginBottom="@dimen/spaceLarge"
         android:orientation="vertical">
 
         <include layout="@layout/fragment_map" />
@@ -20,7 +20,7 @@
         android:id="@+id/textView"
         android:textStyle="bold"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/spaceMedium"
+        android:layout_height="@dimen/spaceLarge"
         android:background="@color/snackBarBackgroundColor"
         android:textColor="@color/snackBarForegroundColor"
         android:gravity="center" />
