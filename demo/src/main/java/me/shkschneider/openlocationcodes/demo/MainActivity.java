@@ -124,19 +124,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void openLocationCode(final double latitude, final double longitude) {
         final String openLocationCode = OpenLocationCodes.encode(latitude, longitude);
-        mTextView.setText(String.format(Locale.US, "%f / %f\n%s", latitude, longitude, openLocationCode));
+        // Proof of concept
+        final String shorten = OpenLocationCodes.shorten(openLocationCode, latitude, longitude);
+        final String recovered = OpenLocationCodes.recover(shorten, latitude, longitude);
+        // /Proof of concept
+        mTextView.setText(String.format(Locale.US, "%f / %f\n%s", latitude, longitude, recovered));
         mTextView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(final View view) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://plus.codes/" + openLocationCode)));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://plus.codes/" + recovered)));
             }
 
         });
 
-        final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(openLocationCode);
-        final String shorten = OpenLocationCodes.shorten(openLocationCode, latitude, longitude);
-        final String recovered = OpenLocationCodes.recover(openLocationCode, latitude, longitude);
+        final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(recovered);
         mGoogleMap.clear();
         mGoogleMap.addPolygon(new PolygonOptions()
                 .add(codeArea.northwest())
