@@ -139,6 +139,14 @@ public class OpenLocationCodes {
         return true;
     }
 
+    public static boolean contains(String code, final double latitude, final double longitude) {
+        if (! isValid(code)) {
+            return false;
+        }
+        final CodeArea codeArea = decode(code);
+        return (codeArea.bounds().contains(new LatLng(latitude, longitude)));
+    }
+
     // Encode
 
     public static String encode(final double latitude, final double longitude) {
