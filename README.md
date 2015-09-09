@@ -1,4 +1,4 @@
-OpenLocationCodes [![JitPack](https://img.shields.io/github/tag/shkschneider/android_OpenLocationCodes.svg?label=JitPack)](https://jitpack.io/#shkschneider/android_OpenLocationCodes/1.2.2) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-OpenLocationCodes-brightgreen.svg?style=flat)](http://android-arsenal.com/details/3/1607)
+OpenLocationCodes [![JitPack](https://img.shields.io/github/tag/shkschneider/android_OpenLocationCodes.svg?label=JitPack)](https://jitpack.io/#shkschneider/android_OpenLocationCodes/1.2.3) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-OpenLocationCodes-brightgreen.svg?style=flat)](http://android-arsenal.com/details/3/1607)
 =================
 
 [![Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_45.png)](https://play.google.com/store/apps/details?id=me.shkschneider.openlocationcodes.demo)
