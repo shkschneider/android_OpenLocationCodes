@@ -8,8 +8,8 @@ android {
         applicationId 'me.shkschneider.openlocationcodes.demo'
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 7
-        versionName '1.2.3'
+        versionCode 8
+        versionName '1.2.4'
     }
     signingConfigs {
         debug {
