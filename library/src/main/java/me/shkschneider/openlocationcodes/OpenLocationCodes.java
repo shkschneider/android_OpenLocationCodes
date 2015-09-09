@@ -337,9 +337,9 @@ public class OpenLocationCodes {
         throw new IllegalArgumentException("Reference location is too far from the Open Location Code center.");
     }
 
-    // Nearest
+    // Recover (from shorten)
 
-    public static String nearest(String shortCode, double referenceLatitude, double referenceLongitude) {
+    public static String recover(String shortCode, double referenceLatitude, double referenceLongitude) {
         if (! isShort(shortCode)) {
             if (isFull(shortCode)) {
                 return shortCode;

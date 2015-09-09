@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onMyLocationChange(final Location location) {
                         openLocationCode(location.getLatitude(), location.getLongitude());
-                        // mGoogleMap.setOnMyLocationChangeListener(null);
+                        mGoogleMap.setOnMyLocationChangeListener(null);
                     }
 
                 });
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(openLocationCode);
         final String shorten = OpenLocationCodes.shorten(openLocationCode, latitude, longitude);
-        final String nearest = OpenLocationCodes.nearest(openLocationCode, latitude, longitude);
+        final String recovered = OpenLocationCodes.recover(openLocationCode, latitude, longitude);
         mGoogleMap.clear();
         mGoogleMap.addPolygon(new PolygonOptions()
                 .add(codeArea.northwest())
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 .strokeColor(getResources().getColor(R.color.accentColor))
                 .strokeWidth(8.0F)
                 .fillColor(Color.TRANSPARENT));
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(codeArea.center(), 19));
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(codeArea.bounds(), (int) getResources().getDimension(R.dimen.spaceMedium)));
     }
 
 }
