@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openLocationCode(final double latitude, final double longitude) {
-        final String openLocationCode = OpenLocationCodes.encode(latitude, longitude);
+        final String openLocationCode = OpenLocationCodes.encode(latitude, longitude/*, 11*/);
         // Proof of concept
         final String shorten = OpenLocationCodes.shorten(openLocationCode, latitude, longitude);
         final String recovered = OpenLocationCodes.recover(shorten, latitude, longitude);

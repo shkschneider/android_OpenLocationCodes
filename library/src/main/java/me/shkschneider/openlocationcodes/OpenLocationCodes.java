@@ -41,6 +41,7 @@ public class OpenLocationCodes {
     private static final float[] PAIR_RESOLUTIONS = {
             20.0F, 1.0F, 0.05F, 0.0025F, 0.000125F
     };
+    private static final int CODE_MAX_LENGTH = 11;
     private static final int GRID_COLUMNS = 4;
     private static final int GRID_ROWS = 5;
     private static final float GRID_SIZE_DEGREES = 0.000125F;
@@ -138,7 +139,7 @@ public class OpenLocationCodes {
         return true;
     }
 
-    public static boolean contains(String code, final double latitude, final double longitude) {
+    public static boolean contains(final String code, final double latitude, final double longitude) {
         if (! isValid(code)) {
             return false;
         }
@@ -149,7 +150,7 @@ public class OpenLocationCodes {
     // Encode
 
     public static String encode(final double latitude, final double longitude) {
-        return encode(latitude, longitude, PAIR_CODE_LENGTH);
+        return encode(latitude, longitude, CODE_MAX_LENGTH);
     }
 
     public static String encode(double latitude, double longitude, final int codeLength) throws IllegalArgumentException {
