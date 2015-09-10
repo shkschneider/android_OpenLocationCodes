@@ -20,8 +20,7 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Locale;
 
 // Open Location Codes were developed at Google's Zurich engineering office, and then open sourced so that they can be freely used.
 // The main author is Doug Rinckes (@drinckes), with the help of lots of colleagues including:
@@ -32,6 +31,8 @@ import java.util.regex.Pattern;
 // Java port by ShkSchneider <https://shkschneider.me>
 // From <https://github.com/google/open-location-code>
 public class OpenLocationCodes {
+
+    public static final int CODE_DEFAULT_LENGTH = 11;
 
     private static final String SEPARATOR = "+";
     private static final int SEPARATOR_POSITION = 8;
@@ -44,6 +45,7 @@ public class OpenLocationCodes {
     private static final float[] PAIR_RESOLUTIONS = {
             20.0F, 1.0F, 0.05F, 0.0025F, 0.000125F
     };
+    private static final int CODE_MIN_LENGTH = SEPARATOR_POSITION;
     private static final int CODE_MAX_LENGTH = 11;
     private static final int GRID_COLUMNS = 4;
     private static final int GRID_ROWS = 5;
@@ -52,53 +54,33 @@ public class OpenLocationCodes {
     // Checks
 
     private static boolean isValid(String code) {
-        if (code == null || code.length() == 0) {
+        if (code == null || code.length() < 2) {
             return false;
         }
-        // The separator is required.
-        if (! code.contains(SEPARATOR)) {
+        // There must be exactly one separator.
+        final int position = code.indexOf(SEPARATOR);
+        if (position == -1) {
             return false;
         }
-        if (code.indexOf(SEPARATOR) != code.lastIndexOf(SEPARATOR)) {
+        if (position != code.lastIndexOf(SEPARATOR)) {
             return false;
         }
-        // Is it the only character?
-        if (code.length() == 1) {
+        if ((position % 2) != 0) {
             return false;
         }
-        // Is it in an illegal position?
-        if (code.indexOf(SEPARATOR) > SEPARATOR_POSITION || code.indexOf(SEPARATOR) % 2 == 1) {
-            return false;
-        }
-        // We can have an even number of padding characters before the separator, but then it must be the final character.
-        if (code.contains(PADDING_CHARACTER)) {
-            // Not allowed to start with them!
-            if (code.indexOf(PADDING_CHARACTER) == 0) {
-                return false;
-            }
-            // There can only be one group and it must have even length.
-            final Pattern pattern = Pattern.compile("(" + PADDING_CHARACTER + "+)");
-            final Matcher matcher = pattern.matcher(code);
-            if (matcher.groupCount() > 1 || (matcher.group(0).length() % 2) == 1 || matcher.group(0).length() > SEPARATOR_POSITION - 2) {
-                return false;
-            }
-            // If the code is long enough to end with a separator, make sure it does.
-            if (code.charAt(code.length() - 1) != SEPARATOR.charAt(0)) {
+        // Check characters before separator: padding or alphabet
+        final String beforeSeparator = code.substring(0, position);
+        for (final char c : beforeSeparator.toCharArray()) {
+            final String s = String.valueOf(c);
+            if (! s.equals(PADDING_CHARACTER) && ! CODE_ALPHABET.contains(s)) {
                 return false;
             }
         }
-        // If there are characters after the separator, make sure there isn't just one of them (not legal).
-        if (code.length() - code.indexOf(SEPARATOR) - 1 == 1) {
-            return false;
-        }
-        // Strip the separator and any padding characters.
-        code = code.replaceAll("\\" + SEPARATOR + "+", "");
-        code = code.replaceAll(PADDING_CHARACTER + "+", "");
-        // Check the code contains only valid characters.
-        int len = code.length();
-        for (int i = 0; i < len; i++) {
-            char character = code.charAt(i);
-            if (character != SEPARATOR.charAt(0) && ! CODE_ALPHABET.contains("" + character)) {
+        // Check characters after separator: alphabet only
+        final String afterSeparator = code.substring(position + 1, code.length());
+        for (final char c : afterSeparator.toCharArray()) {
+            final String s = String.valueOf(c);
+            if (! CODE_ALPHABET.contains(s)) {
                 return false;
             }
         }
@@ -142,6 +124,10 @@ public class OpenLocationCodes {
         return true;
     }
 
+    public static boolean isPadded(final String code) {
+        return code.contains(PADDING_CHARACTER);
+    }
+
     public static boolean contains(final String code, final double latitude, final double longitude) {
         if (! isValid(code)) {
             return false;
@@ -157,7 +143,7 @@ public class OpenLocationCodes {
     }
 
     public static String encode(double latitude, double longitude, final int codeLength) throws IllegalArgumentException {
-        if (codeLength < 2) {
+        if (codeLength < 2 || (codeLength < 10 & (codeLength % 2) == 1)) {
             throw new IllegalArgumentException("Invalid Open Location Code length");
         }
         // Ensure that latitude and longitude are valid.
@@ -171,6 +157,13 @@ public class OpenLocationCodes {
         // If the requested length indicates we want grid refined codes.
         if (codeLength > PAIR_CODE_LENGTH) {
             code += encodeGrid(latitude, longitude, codeLength - PAIR_CODE_LENGTH);
+        }
+        // Tricky last fail-safe filling
+        while (code.length() < CODE_MIN_LENGTH) {
+            code += PADDING_CHARACTER;
+        }
+        if (code.length() == SEPARATOR_POSITION) {
+            code += SEPARATOR;
         }
         return code;
     }
@@ -264,8 +257,10 @@ public class OpenLocationCodes {
         // Strip out separator character (we've already established the code is valid so the maximum is one),
         // padding characters and convert to upper case.
         code = code.replace(SEPARATOR, "");
+        code = code.replaceAll("[0+]", "");
+        code = code.toUpperCase(Locale.US);
         // Decode the lat/lng pair component.
-        final CodeArea codeArea = decodePairs(code.substring(0, PAIR_CODE_LENGTH));
+        final CodeArea codeArea = decodePairs(((code.length() <= PAIR_CODE_LENGTH) ? code : code.substring(0, PAIR_CODE_LENGTH)));
         // If there is a grid refinement component, decode that.
         if (code.length() <= PAIR_CODE_LENGTH) {
             return codeArea;
