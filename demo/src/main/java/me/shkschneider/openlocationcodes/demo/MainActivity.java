@@ -124,11 +124,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void openLocationCode(final double latitude, final double longitude) {
         final String openLocationCode = OpenLocationCodes.encode(latitude, longitude/*, 11*/);
+
         // Proof of concept
         final String shorten = OpenLocationCodes.shorten(openLocationCode, latitude, longitude);
-        final String recovered = OpenLocationCodes.recover(shorten, latitude, longitude);
+        final String recovered = OpenLocationCodes.recover(shorten, latitude, longitude/*, 11*/);
         // /Proof of concept
-        mTextView.setText(String.format(Locale.US, "%f / %f\n%s", latitude, longitude, recovered));
+
+        final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(recovered);
+
+        // Proof of concept
+        final float distanceInMeters = OpenLocationCodes.distance(codeArea);
+        // /Proof of concept
+
+        mTextView.setText(String.format(Locale.US, "%f / %f\n%s\n~%.2fm", latitude, longitude, recovered, distanceInMeters));
         mTextView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -137,15 +145,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
-        final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(recovered);
-
-        // Distance in meters (diagonal)
-        final LatLng northwest = codeArea.northwest();
-        final LatLng southeast = codeArea.southeast();
-        float[] results = new float[1];
-        Location.distanceBetween(northwest.latitude, northwest.longitude, southeast.latitude, southeast.longitude, results);
-        final float distance = results[0];
 
         mGoogleMap.clear();
         mGoogleMap.addPolygon(new PolygonOptions()

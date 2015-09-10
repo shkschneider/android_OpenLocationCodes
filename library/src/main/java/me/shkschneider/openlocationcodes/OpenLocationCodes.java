@@ -14,6 +14,9 @@ package me.shkschneider.openlocationcodes;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import android.location.Location;
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -340,6 +343,10 @@ public class OpenLocationCodes {
     // Recover (from shorten)
 
     public static String recover(String shortCode, double referenceLatitude, double referenceLongitude) {
+        return recover(shortCode, referenceLatitude, referenceLongitude, CODE_MAX_LENGTH);
+    }
+
+    public static String recover(String shortCode, double referenceLatitude, double referenceLongitude, final int codeLength) {
         if (! isShort(shortCode)) {
             if (isFull(shortCode)) {
                 return shortCode;
@@ -350,7 +357,7 @@ public class OpenLocationCodes {
         }
         referenceLatitude = clipLatitude(referenceLatitude);
         referenceLongitude = normalizeLongitude(referenceLongitude);
-        final int digitsToRecover = 8 - shortCode.indexOf(SEPARATOR);
+        final int digitsToRecover = SEPARATOR_POSITION - shortCode.indexOf(SEPARATOR);
         // The resolution (height and width) of the padded area in degrees.
         final double paddedAreaSize = Math.pow(20, 2 - (PAIR_CODE_LENGTH / 2));
         // Distance from the center to an edge (in degrees).
@@ -378,8 +385,21 @@ public class OpenLocationCodes {
             recoveredLongitude += paddedAreaSize;
         }
 
-        return encode(recoveredLatitude, recoveredLongitude, recovered.length() - 1);
+        return encode(recoveredLatitude, recoveredLongitude, codeLength);
     }
+
+    // Distance
+
+    public static float distance(@NonNull final CodeArea codeArea) {
+        float[] results = new float[1];
+        Location.distanceBetween(codeArea.northwest().latitude, codeArea.northwest().longitude, codeArea.northeast().latitude, codeArea.northeast().longitude, results);
+        final float distance1 = results[0];
+        Location.distanceBetween(codeArea.northwest().latitude, codeArea.northwest().longitude, codeArea.southeast().latitude, codeArea.southeast().longitude, results);
+        final float distance2 = results[0];
+        return (distance1 + distance2) / 2;
+    }
+
+    // CodeArea
 
     public static class CodeArea {
 
