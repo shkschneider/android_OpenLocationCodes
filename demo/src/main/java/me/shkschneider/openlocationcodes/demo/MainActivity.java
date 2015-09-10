@@ -139,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final OpenLocationCodes.CodeArea codeArea = OpenLocationCodes.decode(recovered);
+
+        // Distance in meters (diagonal)
+        final LatLng northwest = codeArea.northwest();
+        final LatLng southeast = codeArea.southeast();
+        float[] results = new float[1];
+        Location.distanceBetween(northwest.latitude, northwest.longitude, southeast.latitude, southeast.longitude, results);
+        final float distance = results[0];
+
         mGoogleMap.clear();
         mGoogleMap.addPolygon(new PolygonOptions()
                 .add(codeArea.northwest())
