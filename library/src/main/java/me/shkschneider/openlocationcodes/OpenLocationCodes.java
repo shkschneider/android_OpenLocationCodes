@@ -355,12 +355,8 @@ public class OpenLocationCodes {
         final int digitsToRecover = SEPARATOR_POSITION - shortCode.indexOf(SEPARATOR);
         // The resolution (height and width) of the padded area in degrees.
         final double paddedAreaSize = Math.pow(20, 2 - (PAIR_CODE_LENGTH / 2));
-        // Distance from the center to an edge (in degrees).
-        // Round down the reference latitude and longitude to the resolution.
-        final double roundedLatitude = Math.floor(referenceLatitude / paddedAreaSize) * paddedAreaSize;
-        final double roundedLongitude = Math.floor(referenceLongitude / paddedAreaSize) * paddedAreaSize;
         // Use the reference location to pad the supplied short code and decode it.
-        final String recovered = encode(roundedLatitude, roundedLongitude).substring(0, digitsToRecover) + shortCode;
+        final String recovered = encode(referenceLatitude, referenceLongitude).substring(0, digitsToRecover) + shortCode;
         final CodeArea codeArea = decode(recovered);
         double recoveredLatitude = codeArea.latitudeCenter;
         double recoveredLongitude = codeArea.longitudeCenter;
