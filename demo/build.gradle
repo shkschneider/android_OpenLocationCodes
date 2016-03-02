@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId 'me.shkschneider.openlocationcodes.demo'
-        minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 9
-        versionName '1.3.0'
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 10
+        versionName '1.3.1'
     }
     signingConfigs {
         debug {
@@ -56,11 +56,11 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-base:7.5.0'
-    compile 'com.google.android.gms:play-services-location:7.5.0'
+    compile 'com.google.android.gms:play-services-base:8.4.0'
+    compile 'com.google.android.gms:play-services-location:8.4.0'
 
-    compile 'com.android.support:support-v4:22.2.0'
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:support-v4:23.2.0'
+    compile 'com.android.support:appcompat-v7:23.2.0'
 
     compile project(':library')
     compile fileTree(dir: 'libs', include: '*.jar')
