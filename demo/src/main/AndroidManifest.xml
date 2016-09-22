@@ -3,6 +3,8 @@
     package="me.shkschneider.openlocationcodes.demo">
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="true" />
+    <uses-feature android:name="android.hardware.location" android:required="true" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="true" />
 
     <!-- Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,7 +36,7 @@
         </activity>
 
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBALbcdu7L2o-Lup_uclLOXcuBiNLKxllE" />
+            android:value="@string/apiKey" />
 
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
