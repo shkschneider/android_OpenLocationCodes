@@ -24,7 +24,7 @@ import java.util.Locale;
 
 // Open Location Codes were developed at Google's Zurich engineering office, and then open sourced so that they can be freely used.
 // The main author is Doug Rinckes (@drinckes), with the help of lots of colleagues including:
-// Philipp Bunge, Aner Ben-Artzi, Jarda Bengl, Prasenit Phukan, Sacha van Ginhoven
+// Philipp Bunge, Aner Ben-Artzi, Jarda Bengl, Prasenit Phukan, Sacha van Ginhoven and Zongwei Li
 //
 // http://openlocationcode.com
 //
@@ -326,10 +326,13 @@ public class OpenLocationCodes {
         final CodeArea codeArea = decode(code);
         final double latitudeDiff = Math.abs(latitude - codeArea.latitudeCenter);
         final double longitudeDiff = Math.abs(longitude - codeArea.longitudeCenter);
-        if (latitudeDiff < 0.0125 && longitudeDiff < 0.0125) {
+        if (latitudeDiff < (computeLatitudePrecision(8) / 4) && longitudeDiff < (computeLatitudePrecision(8) / 4)) {
             return encode(latitude, longitude).substring(6);
         }
-        if (latitudeDiff < 0.25 && longitudeDiff < 0.25) {
+        if (latitudeDiff < (computeLatitudePrecision(6) / 4) && longitudeDiff < (computeLatitudePrecision(6) / 4)) {
+            return encode(latitude, longitude).substring(6);
+        }
+        if (latitudeDiff < (computeLatitudePrecision(4) / 4) && longitudeDiff < (computeLatitudePrecision(4) / 4)) {
             return encode(latitude, longitude).substring(4);
         }
         throw new IllegalArgumentException("Reference location is too far from the Open Location Code center.");
