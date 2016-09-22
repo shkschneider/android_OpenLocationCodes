@@ -15,11 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolygonOptions;
 
@@ -43,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitle(getResources().getString(R.string.subtitle));
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-
             @Override
             public boolean onMenuItemClick(final MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
@@ -56,13 +56,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return false;
             }
-
         });
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
         final SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
-
             @Override
             public void onMapReady(final GoogleMap googleMap) {
                 mGoogleMap = googleMap;
@@ -70,88 +68,42 @@ public class MainActivity extends AppCompatActivity {
                 mGoogleMap.getUiSettings().setZoomGesturesEnabled(false);
                 mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
                 mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
                     @Override
                     public void onMapClick(final LatLng latLng) {
                         openLocationCode(latLng.latitude, latLng.longitude, mCodeLength, false);
                     }
-
                 });
                 mGoogleMap.setMyLocationEnabled(true);
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                final Locator locator = new Locator(MainActivity.this);
+                locator.start(LocationRequest.create().setNumUpdates(1).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY), new LocationListener() {
+                    @Override
+                    public void onLocationChanged(final Location location) {
+                        update(location, true);
+                    }
+                });
                 mGoogleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-
                     @Override
                     public boolean onMyLocationButtonClick() {
-                        final Location location = mGoogleMap.getMyLocation();
-                        if (location != null) {
-                            openLocationCode(location.getLatitude(), location.getLongitude(), OpenLocationCodes.CODE_DEFAULT_LENGTH, true);
-                            return true;
+                        final Location location = locator.location();
+                        if (location == null) {
+                            return false;
                         }
-                        return false;
+                        update(location, false);
+                        return true;
                     }
-
                 });
-                mGoogleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
+                mGoogleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
                     @Override
-                    public void onMyLocationChange(final Location location) {
-                        openLocationCode(location.getLatitude(), location.getLongitude(), mCodeLength, true);
-                        // mGoogleMap.setOnMyLocationChangeListener(null);
-                    }
-
-                });
-                mGoogleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-
-                    private float mZoom = 2.0F;
-
-                    @Override
-                    public void onCameraChange(final CameraPosition cameraPosition) {
-                        if (cameraPosition.zoom != mZoom) {
-                            mZoom = cameraPosition.zoom;
-                            final Location location = mGoogleMap.getMyLocation();
-                            if (location != null) {
-                                switch ((int) cameraPosition.zoom) {
-                                    case 20:
-                                    case 19:
-                                    case 18:
-                                        mCodeLength = 10;
-                                        break ;
-                                    case 17:
-                                    case 16:
-                                    case 15:
-                                    case 14:
-                                    case 13:
-                                    case 12:
-                                        mCodeLength = 8;
-                                        break ;
-                                    case 11:
-                                    case 10:
-                                    case 9:
-                                    case 8:
-                                    case 7:
-                                    case 6:
-                                    case 5:
-                                        mCodeLength = 4;
-                                        break ;
-                                    case 4:
-                                    case 3:
-                                    case 2:
-                                    case 1:
-                                        mCodeLength = 2;
-                                        break ;
-                                    default:
-                                        mCodeLength = OpenLocationCodes.CODE_DEFAULT_LENGTH;
-                                        break ;
-                                }
-                                openLocationCode(location.getLatitude(), location.getLongitude(), mCodeLength, false);
-                            }
+                    public void onCameraIdle() {
+                        final Location location = locator.location();
+                        if (location == null) {
+                            return;
                         }
+                        update(location, false);
                     }
-
                 });
             }
-
         });
 
         mTextView = (TextView) findViewById(R.id.textView);
@@ -161,16 +113,58 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(MainActivity.this)
                     .setMessage(getResources().getString(R.string.credits))
                     .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-
                         @Override
-                        public void onClick(final DialogInterface dialogInterface, final int which) {
+                        public void onClick(final DialogInterface dialogInterface, final int i) {
                             dialogInterface.dismiss();
                             sharedPreferences.edit().putBoolean("credits", true).apply();
                         }
-
                     })
                     .show();
         }
+    }
+
+    private float mZoom = 2.0F;
+
+    private void update(final Location location, final boolean animate) {
+        if (mGoogleMap.getCameraPosition().zoom != mZoom) {
+            mZoom = mGoogleMap.getCameraPosition().zoom;
+            switch ((int) mZoom) {
+                case 20:
+                case 19:
+                case 18:
+                    mCodeLength = 10;
+                    break;
+                case 17:
+                case 16:
+                case 15:
+                case 14:
+                case 13:
+                case 12:
+                    mCodeLength = 8;
+                    break;
+                case 11:
+                case 10:
+                case 9:
+                case 8:
+                case 7:
+                case 6:
+                case 5:
+                    mCodeLength = 4;
+                    break;
+                case 4:
+                case 3:
+                case 2:
+                case 1:
+                    mCodeLength = 2;
+                    break;
+                default:
+                    mCodeLength = OpenLocationCodes.CODE_DEFAULT_LENGTH;
+                    break;
+            }
+            openLocationCode(location.getLatitude(), location.getLongitude(), mCodeLength, animate);
+            return;
+        }
+        openLocationCode(location.getLatitude(), location.getLongitude(), mCodeLength, animate);
     }
 
     private void openLocationCode(final double latitude, final double longitude, final int codeLength, final boolean animate) {
@@ -186,12 +180,10 @@ public class MainActivity extends AppCompatActivity {
 
         mTextView.setText(String.format(Locale.US, "%f / %f\n%s\n~%.2fm", latitude, longitude, openLocationCode, distanceInMeters));
         mTextView.setOnClickListener(new View.OnClickListener() {
-
             @Override
-            public void onClick(final View view) {
+            public void onClick(View view) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://plus.codes/" + openLocationCode)));
             }
-
         });
 
         mGoogleMap.clear();
