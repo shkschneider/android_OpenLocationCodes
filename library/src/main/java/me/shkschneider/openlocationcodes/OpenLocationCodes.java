@@ -143,7 +143,7 @@ public class OpenLocationCodes {
     }
 
     public static String encode(double latitude, double longitude, final int codeLength) throws IllegalArgumentException {
-        if (codeLength < 2 || (codeLength < 10 & (codeLength % 2) == 1)) {
+        if (codeLength < 4 || (codeLength < 10 && (codeLength % 2) == 1)) {
             throw new IllegalArgumentException("Invalid Open Location Code length");
         }
         // Ensure that latitude and longitude are valid.
@@ -356,27 +356,28 @@ public class OpenLocationCodes {
         referenceLatitude = clipLatitude(referenceLatitude);
         referenceLongitude = normalizeLongitude(referenceLongitude);
         final int digitsToRecover = SEPARATOR_POSITION - shortCode.indexOf(SEPARATOR);
-        // The resolution (height and width) of the padded area in degrees.
-        final double paddedAreaSize = Math.pow(20, 2 - (PAIR_CODE_LENGTH / 2));
+        // The precision (height and width) of the missing prefix in degrees.
+        final double prefixPrecision = Math.pow(CODING_BASE.intValue(), 2 - (digitsToRecover / 2));
         // Use the reference location to pad the supplied short code and decode it.
         final String recovered = encode(referenceLatitude, referenceLongitude).substring(0, digitsToRecover) + shortCode;
         final CodeArea codeArea = decode(recovered);
         double recoveredLatitude = codeArea.latitudeCenter;
         double recoveredLongitude = codeArea.longitudeCenter;
-        // Move the recovered latitude by one resolution up or down if it is too far from the reference.
+        // Move the recovered latitude by one precision up or down if it is too far from the reference,
+        // unless doing so would lead to an invalid latitude.
         double latitudeDiff = recoveredLatitude - referenceLatitude;
-        if (latitudeDiff > paddedAreaSize / 2) {
-            recoveredLatitude -= paddedAreaSize;
+        if (latitudeDiff > prefixPrecision / 2 && recoveredLatitude - prefixPrecision > -LATITUDE_MAX) {
+            recoveredLatitude -= prefixPrecision;
         }
-        else if (latitudeDiff < -paddedAreaSize / 2) {
-            recoveredLatitude += paddedAreaSize;
+        else if (latitudeDiff < -prefixPrecision / 2 && recoveredLatitude + prefixPrecision < LATITUDE_MAX) {
+            recoveredLatitude += prefixPrecision;
         }
         // Move the recovered longitude by one resolution up or down if it is too far from the reference.
         double longitudeDiff = codeArea.longitudeCenter - referenceLongitude;
-        if (longitudeDiff > paddedAreaSize / 2) {
-            recoveredLongitude -= paddedAreaSize;
-        } else if (longitudeDiff < -paddedAreaSize / 2) {
-            recoveredLongitude += paddedAreaSize;
+        if (longitudeDiff > prefixPrecision / 2) {
+            recoveredLongitude -= prefixPrecision;
+        } else if (longitudeDiff < -prefixPrecision / 2) {
+            recoveredLongitude += prefixPrecision;
         }
 
         return encode(recoveredLatitude, recoveredLongitude, codeLength);
